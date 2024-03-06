@@ -7,7 +7,7 @@ on:
     types: [run_build]
 
 permissions:
-  contents: read/write
+  contents: read|write
   discussions: write
 
 jobs:
