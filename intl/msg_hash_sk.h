@@ -6,6 +6,20 @@
 #pragma warning(disable:4566)
 #endif
 
+/*
+##### NOTE FOR TRANSLATORS ####
+
+PLEASE do NOT modify any `msg_hash_*.h` files, besides `msg_hash_us.h`!
+
+Translations are handled using the localization platform Crowdin:
+https://crowdin.com/project/retroarch
+
+Translations from Crowdin are applied automatically and will overwrite
+any changes made to the other localization files.
+As a result, any submissions directly altering `msg_hash_*.h` files
+other than `msg_hash_us.h` will be rejected.
+*/
+
 /* Top-Level Menu */
 
 MSG_HASH(
@@ -518,10 +532,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_LOCK,
    "Uzamknúť Nainštalované Jadro"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CORE_LOCK,
-   "Zabráňte úprave aktuálne nainštalovaného jadra. Môže sa použiť na zabránenie nechceným aktualizáciám, keď obsah vyžaduje špecifickú verziu jadra (napr. Sady Arcade ROM)."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CORE_SET_STANDALONE_EXEMPT,
@@ -1145,6 +1155,14 @@ MSG_HASH(
    "Povoliť cloud synchronizáciu"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_SYNC_MODE_AUTOMATIC,
+   "Automaticky"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_SYNC_MODE_MANUAL,
+   "Ručne"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_USERNAME,
    "Meno používateľa"
    )
@@ -1325,10 +1343,6 @@ MSG_HASH(
    "Používateľ"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_USER_SETTINGS,
-   "Zmeniť účet, užívateľské meno a nastavenie jazyka."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DIRECTORY_SETTINGS,
    "Priečinok"
    )
@@ -1387,10 +1401,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DRIVER,
    "Vstup"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_DRIVER,
-   "Používaný vstupný ovládač. Niektoré ovládače videa vynucujú iný vstupný ovládač."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_JOYPAD_DRIVER,
@@ -1650,20 +1660,12 @@ MSG_HASH(
    "Prepínanie medzi natívnym a ultraširokým super rozlíšením."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_X_AXIS_CENTERING,
-   "Centrovanie X-Axis"
-   )
-MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_X_AXIS_CENTERING,
    "Ak obraz nie je správne vycentrovaný na displeji, môžete prenastaviť tieto možnosti."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_PORCH_ADJUST,
-   "Porch Nastevenie"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CRT_SWITCH_PORCH_ADJUST,
-   "Pomocou týchto možností môžete upravovať nastavenia verandy a meniť veľkosť obrázka."
+   MENU_ENUM_SUBLABEL_CRT_SWITCH_VERTICAL_ADJUST,
+   "Ak obraz nie je správne vycentrovaný na displeji, môžete prenastaviť tieto možnosti."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CRT_SWITCH_HIRES_MENU,
@@ -1759,14 +1761,6 @@ MSG_HASH(
 
 /* Settings > Video > Fullscreen Mode */
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FULLSCREEN,
-   "Spustiť v režime celej obrazovky"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_FULLSCREEN,
-   "Spustiť v režime na celú obrazovku. Môže byť zmenené počas behu. Môže byť prepísané prepínačom príkazového riadku."
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOWED_FULLSCREEN,
    "Maximalizované okno"
@@ -1920,14 +1914,7 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_HDR_MAX_NITS,
    "Najvyšší jas"
    )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_MAX_NITS,
-   "Nastaviť najvyšší jas (v cd/m2), ktorú vie displej zobraziť. Pozri stránku RTINGS.com na zistenie najvyššieho jasu displeja."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_HDR_CONTRAST,
-   "Kontrast"
-   )
+
 
 /* Settings > Video > Synchronization */
 
@@ -2446,10 +2433,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_HOTKEY_BINDS,
    "Klávesové skratky"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
-   "Potvrdiť ukončenie"
-   )
 
 /* Settings > Input > Haptic Feedback/Vibration */
 
@@ -2473,16 +2456,16 @@ MSG_HASH(
    "Zjednotené ovládanie ponuky"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_ALL_USERS_CONTROL_MENU,
+   "Všetci používatelia ovládajú ponuku"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DISABLE_INFO_BUTTON,
    "Zakázať tlačidlo Info"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DISABLE_SEARCH_BUTTON,
    "Zakázať tlačidlo Hľadať"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_ALL_USERS_CONTROL_MENU,
-   "Všetci používatelia ovládajú ponuku"
    )
 
 /* Settings > Input > Hotkeys */
@@ -2637,15 +2620,6 @@ MSG_HASH(
    )
 
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_SEND_DEBUG_INFO,
-   "Odoslať ladiace informácie"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_META_SEND_DEBUG_INFO,
-   "Odoslať diagnostické informácie o zariadení a nastaveniach RetroArch na naše serveri na analýzu."
-   )
-
 /* Settings > Input > Port # Controls */
 
 MSG_HASH(
@@ -2791,6 +2765,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_LIGHTGUN_START,
    "Spustenie zbrane"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_TURBO,
+   "Rýchlo streľba"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_HOLD,
+   "Držať"
    )
 
 /* Settings > Latency */
@@ -3142,15 +3124,17 @@ MSG_HASH(
 /* Settings > User Interface */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_SETTINGS,
+   "Vzhľad"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_VIEWS_SETTINGS,
    "Viditeľnosť položky ponuky"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_MENU_SETTINGS,
-   "Vzhľad"
+   MENU_ENUM_LABEL_VALUE_QUIT_ON_CLOSE_CONTENT,
+   "Ukončiť pri zavretí obsahu"
    )
-#ifdef _3DS
-#endif
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SHOW_ADVANCED_SETTINGS,
    "Zobraziť pokročilé nastavenia"
@@ -3160,8 +3144,12 @@ MSG_HASH(
    "Režim kiosku"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_QUIT_ON_CLOSE_CONTENT,
-   "Ukončiť pri zavretí obsahu"
+   MENU_ENUM_LABEL_VALUE_MOUSE_ENABLE,
+   "Podpora myši"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_POINTER_ENABLE,
+   "Podpora dotyku"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_SCREENSAVER_ANIMATION_SNOW,
@@ -3175,14 +3163,8 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_SCREENSAVER_ANIMATION_VORTEX,
    "Vír"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_MOUSE_ENABLE,
-   "Podpora myši"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_POINTER_ENABLE,
-   "Podpora dotyku"
-   )
+#ifdef _3DS
+#endif
 
 /* Settings > User Interface > Menu Item Visibility */
 
@@ -3345,16 +3327,8 @@ MSG_HASH(
    "Zobraziť 'História'"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CONTENT_SHOW_ADD,
-   "Zobraziť 'Importovať obsah'"
-   )
-MSG_HASH( /* FIXME can now be replaced with MENU_ENUM_LABEL_VALUE_CONTENT_SHOW_ADD */
    MENU_ENUM_LABEL_VALUE_CONTENT_SHOW_ADD_ENTRY,
    "Zobraziť 'Importovať obsah'"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CONTENT_SHOW_ADD_ENTRY,
-   "Zobraziť položku 'Importovať obsah' v hlavnej ponuke alebo ponuke hracích zoznamov."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_ADD_CONTENT_ENTRY_DISPLAY_MAIN_TAB,
@@ -4735,6 +4709,7 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISK_IMAGE_APPEND,
    "Načítať nový disk"
    )
+/* deprecated */
 
 /* Quick Menu > Shaders */
 
@@ -4758,13 +4733,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SCALE,
    "Škálovať"
    )
-
-/* Quick Menu > Shaders > Save */
-
-
-
-
-/* Quick Menu > Shaders > Remove */
 
 
 /* Quick Menu > Shaders > Shader Parameters */
@@ -5189,6 +5157,18 @@ MSG_HASH(
    "<Neurčené>"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SCAN_METHOD_CUSTOM,
+   "Vlastné"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SCAN_USE_DB_NONE,
+   "Žiadne"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SCAN_TARGET_PLAYLIST_CUSTOM,
+   "<Vlastné>"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LEFT_ANALOG,
    "Ľavý analóg"
    )
@@ -5418,6 +5398,14 @@ MSG_HASH(
    "Dynamické pozadie"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_XMB_CURRENT_MENU_ICON_NONE,
+   "Žiadne"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_XMB_CURRENT_MENU_ICON_NORMAL,
+   "Normálne"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_XMB_FONT,
    "Písmo"
    )
@@ -5536,12 +5524,40 @@ MSG_HASH(
 /* Ozone: Settings > User Interface > Appearance */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_FONT,
+   "Písmo"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_FONT_SCALE,
+   "Mierka písma"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LEFT_THUMBNAILS_OZONE,
    "Sekundárna miniatúra"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_OZONE_THUMBNAIL_SCALE_FACTOR,
    "Mierka zväčšenia miniatúry"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_ICON_NONE,
+   "Žiadne"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_ICON_DYNAMIC,
+   "Dynamické"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_SEPARATOR_NONE,
+   "Žiadne"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_SEPARATOR_NORMAL,
+   "Normálne"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_SEPARATOR_MAXIMUM,
+   "Maximálne"
    )
 
 MSG_HASH(
@@ -6145,14 +6161,6 @@ MSG_HASH(
    "Stav"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CUSTOM_RATIO,
-   "Vlastný pomer"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FORCE_ASPECT,
-   "Vynútiť pomer strán"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CHEAT_DELETE_OPTION,
    "Vymazať túto zhodu"
    )
@@ -6179,14 +6187,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_HELP_WHAT_IS_A_CORE,
    "Čo je jadro?"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_HELP_SEND_DEBUG_INFO,
-   "Odoslať ladiace informácie"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_HELP_SEND_DEBUG_INFO,
-   "Odoslať diagnostické informácie o zariadení a nastaveniach RetroArch na naše serveri na analýzu."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MANAGEMENT,
@@ -6391,14 +6391,6 @@ MSG_HASH(
    "Kontrola jadra: "
    )
 MSG_HASH(
-   MSG_NUM_CORES_UPDATED,
-   "aktualizované jadrá: "
-   )
-MSG_HASH(
-   MSG_NUM_CORES_LOCKED,
-   "preskočené jadrá: "
-   )
-MSG_HASH(
    MSG_AUDIO_MUTED,
    "Zvuk stlmený."
    )
@@ -6429,14 +6421,6 @@ MSG_HASH(
 MSG_HASH(
    MSG_EXTRACTING,
    "Extrahujem"
-   )
-MSG_HASH(
-   MSG_FAILED_TO_LOAD,
-   "Načítanie zlyhalo"
-   )
-MSG_HASH(
-   MSG_FAILED_TO_LOAD_CONTENT,
-   "Obsah sa nepodarilo načítať"
    )
 MSG_HASH(
    MSG_FILE_NOT_FOUND,
@@ -6473,10 +6457,6 @@ MSG_HASH(
 MSG_HASH(
    MSG_IN_GIGABYTES,
    "v gigabajtoch"
-   )
-MSG_HASH(
-   MSG_LOADED_STATE_FROM_SLOT,
-   "Načítaný stav zo slotu #%d."
    )
 MSG_HASH(
    MSG_LOADING,
@@ -6913,4 +6893,6 @@ MSG_HASH(
 
 
 
+#endif
+#ifdef HAVE_SMBCLIENT
 #endif

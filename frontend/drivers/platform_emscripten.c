@@ -17,6 +17,7 @@
 
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
+#include <emscripten/threading.h>
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
@@ -53,6 +54,7 @@
 #include "../../tasks/tasks_internal.h"
 #include "../../cheat_manager.h"
 #include "../../audio/audio_driver.h"
+#include "../../gfx/common/gl_common.h"
 
 #ifdef HAVE_EXTRA_WASMFS
 #include <emscripten/wasmfs.h>
@@ -60,7 +62,6 @@
 
 #ifdef PROXY_TO_PTHREAD
 #include <emscripten/wasm_worker.h>
-#include <emscripten/threading.h>
 #include <emscripten/proxying.h>
 #include <emscripten/atomic.h>
 #define PLATFORM_SETVAL(type, addr, val) emscripten_atomic_store_##type(addr, val)
@@ -73,10 +74,20 @@
 #include "platform_emscripten.h"
 
 void emscripten_mainloop(void);
+
+/* javascript library functions */
+void PlatformEmscriptenKeepThreadAlive(void);
 void PlatformEmscriptenWatchCanvasSizeAndDpr(double *dpr);
+void PlatformEmscriptenCanvasListenersInit(void);
 void PlatformEmscriptenWatchWindowVisibility(void);
 void PlatformEmscriptenPowerStateInit(void);
 void PlatformEmscriptenMemoryUsageInit(void);
+void PlatformEmscriptenWatchFullscreen(void);
+void PlatformEmscriptenGLContextEventInit(void);
+void PlatformEmscriptenSetCanvasSize(int width, int height);
+void PlatformEmscriptenSetWakeLock(bool state);
+void PlatformEmscriptenGetSystemInfo(unsigned *browser, unsigned *os);
+void PlatformEmscriptenFree(void);
 
 typedef struct
 {
@@ -88,12 +99,22 @@ typedef struct
    uint64_t memory_used;
    uint64_t memory_limit;
    double device_pixel_ratio;
+   double device_pixel_ratio_temp;
+   enum platform_emscripten_browser browser;
+   enum platform_emscripten_os os;
+   enum frontend_fork fork_mode;
+   int main_loop_blockers;
+   int deferred_sleep_ms;
    int raf_interval;
    int canvas_width;
    int canvas_height;
    int power_state_discharge_time;
    float power_state_level;
    bool has_async_atomics;
+   bool enable_set_canvas_size;
+   bool disable_detect_enter_fullscreen;
+   bool fullscreen;
+   bool gl_context_lost;
    volatile bool power_state_charging;
    volatile bool power_state_supported;
    volatile bool window_hidden;
@@ -101,6 +122,22 @@ typedef struct
 } emscripten_platform_data_t;
 
 static emscripten_platform_data_t *emscripten_platform_data = NULL;
+
+/* defined here since implementation is frontend dependent */
+void retro_sleep(unsigned msec)
+{
+#if defined(EMSCRIPTEN_ASYNCIFY) && !defined(HAVE_THREADS)
+   emscripten_sleep(msec);
+#elif defined(EMSCRIPTEN_ASYNCIFY)
+   if (emscripten_is_main_browser_thread())
+      emscripten_sleep(msec);
+   else
+      emscripten_thread_sleep(msec);
+#else
+   /* also works on main thread, but uses busy wait */
+   emscripten_thread_sleep(msec);
+#endif
+}
 
 /* begin exported functions */
 
@@ -132,6 +169,11 @@ void cmd_undo_load_state(void)
 }
 
 /* misc */
+
+void cmd_toggle_fullscreen(void)
+{
+   command_event(CMD_EVENT_FULLSCREEN_TOGGLE, NULL);
+}
 
 void cmd_take_screenshot(void)
 {
@@ -232,7 +274,7 @@ void cmd_cheat_apply_cheats(void)
 
 /* javascript callbacks */
 
-void platform_emscripten_update_canvas_dimensions(int width, int height, double *dpr)
+void platform_emscripten_update_canvas_dimensions_cb(int width, int height, double *dpr)
 {
    printf("[INFO] Setting real canvas size: %d x %d\n", width, height);
    emscripten_set_canvas_element_size("#canvas", width, height);
@@ -243,14 +285,14 @@ void platform_emscripten_update_canvas_dimensions(int width, int height, double 
    PLATFORM_SETVAL(f64, &emscripten_platform_data->device_pixel_ratio, *dpr);
 }
 
-void platform_emscripten_update_window_hidden(bool hidden)
+void platform_emscripten_update_window_hidden_cb(bool hidden)
 {
    if (!emscripten_platform_data)
       return;
    emscripten_platform_data->window_hidden = hidden;
 }
 
-void platform_emscripten_update_power_state(bool supported, int discharge_time, float level, bool charging)
+void platform_emscripten_update_power_state_cb(bool supported, int discharge_time, float level, bool charging)
 {
    if (!emscripten_platform_data)
       return;
@@ -260,12 +302,40 @@ void platform_emscripten_update_power_state(bool supported, int discharge_time, 
    PLATFORM_SETVAL(f32, &emscripten_platform_data->power_state_level,          level);
 }
 
-void platform_emscripten_update_memory_usage(uint32_t used1, uint32_t used2, uint32_t limit1, uint32_t limit2)
+void platform_emscripten_update_memory_usage_cb(uint64_t used, uint64_t limit)
 {
    if (!emscripten_platform_data)
       return;
-   PLATFORM_SETVAL(u64, &emscripten_platform_data->memory_used,  used1 | ((uint64_t)used2 << 32));
-   PLATFORM_SETVAL(u64, &emscripten_platform_data->memory_limit, limit1 | ((uint64_t)limit2 << 32));
+   PLATFORM_SETVAL(u64, &emscripten_platform_data->memory_used,  used);
+   PLATFORM_SETVAL(u64, &emscripten_platform_data->memory_limit, limit);
+}
+
+static void fullscreen_update(void *data)
+{
+   command_event(CMD_EVENT_FULLSCREEN_TOGGLE, NULL);
+}
+
+void platform_emscripten_update_fullscreen_state_cb(bool state)
+{
+   if (state == emscripten_platform_data->fullscreen || (state && emscripten_platform_data->disable_detect_enter_fullscreen))
+      return;
+
+   emscripten_platform_data->fullscreen = state;
+   platform_emscripten_run_on_program_thread_async(fullscreen_update, NULL);
+}
+
+void platform_emscripten_gl_context_lost_cb(void)
+{
+   printf("[WARN] WebGL context lost!\n");
+   emscripten_platform_data->gl_context_lost = true;
+}
+
+void platform_emscripten_gl_context_restored_cb(void)
+{
+   printf("[INFO] WebGL context restored.\n");
+   emscripten_platform_data->gl_context_lost = false;
+   /* there might be a better way to do this, but for now this works */
+   command_event(CMD_EVENT_REINIT, NULL);
 }
 
 void platform_emscripten_command_raise_flag()
@@ -315,13 +385,13 @@ void platform_emscripten_command_reply(const char *msg, size_t len)
 
 size_t platform_emscripten_command_read(char **into, size_t max_len)
 {
-   if (!emscripten_platform_data || !emscripten_platform_data->command_flag)
+   if (!emscripten_platform_data->command_flag)
       return 0;
    return MAIN_THREAD_EM_ASM_INT({
       var next_command = RPE.command_queue.shift();
       var length = lengthBytesUTF8(next_command);
       if (length > $2) {
-         console.error("[CMD] Command too long, skipping", next_command);
+         err("[CMD] Command too long, skipping", next_command);
          return 0;
       }
       stringToUTF8(next_command, $1, $2);
@@ -334,24 +404,29 @@ size_t platform_emscripten_command_read(char **into, size_t max_len)
 
 void platform_emscripten_get_canvas_size(int *width, int *height)
 {
-   if (!emscripten_platform_data)
-      goto error;
-
    *width  = PLATFORM_GETVAL(u32, &emscripten_platform_data->canvas_width);
    *height = PLATFORM_GETVAL(u32, &emscripten_platform_data->canvas_height);
 
    if (*width != 0 || *height != 0)
       return;
 
-error:
    *width  = 800;
    *height = 600;
-   RARCH_ERR("[EMSCRIPTEN]: Could not get screen dimensions!\n");
+   RARCH_ERR("[EMSCRIPTEN] Could not get screen dimensions.\n");
 }
 
 double platform_emscripten_get_dpr(void)
 {
    return PLATFORM_GETVAL(f64, &emscripten_platform_data->device_pixel_ratio);
+}
+
+unsigned platform_emscripten_get_min_sleep_ms(void)
+{
+   if (emscripten_platform_data->browser == PLATFORM_EMSCRIPTEN_BROWSER_FIREFOX &&
+       emscripten_platform_data->os      == PLATFORM_EMSCRIPTEN_OS_WINDOWS)
+      return 16;
+
+   return 5;
 }
 
 bool platform_emscripten_has_async_atomics(void)
@@ -366,7 +441,19 @@ bool platform_emscripten_is_window_hidden(void)
 
 bool platform_emscripten_should_drop_iter(void)
 {
-   return (emscripten_platform_data->window_hidden && emscripten_platform_data->raf_interval);
+#if defined(PROXY_TO_PTHREAD) || defined(EMSCRIPTEN_ASYNCIFY)
+   /* If possible, sleep while hidden to mimimize CPU usage. */
+   if (emscripten_platform_data->window_hidden)
+      retro_sleep(100);
+#endif
+   return emscripten_platform_data->window_hidden || emscripten_platform_data->gl_context_lost;
+}
+
+static void platform_emscripten_pop_main_loop_blocker(void)
+{
+   emscripten_platform_data->main_loop_blockers--;
+   if (emscripten_platform_data->main_loop_blockers < 0)
+      emscripten_platform_data->main_loop_blockers = 0;
 }
 
 #ifdef PROXY_TO_PTHREAD
@@ -379,13 +466,18 @@ static void set_raf_interval(void *data)
 void platform_emscripten_wait_for_frame(void)
 {
    if (emscripten_platform_data->raf_interval)
+   {
+      /* Firefox needs glFinish explicitly called here. */
+      gl_finish();
       emscripten_condvar_waitinf(&emscripten_platform_data->raf_cond, &emscripten_platform_data->raf_lock);
+   }
 }
 
 #else
 
 void platform_emscripten_enter_fake_block(int ms)
 {
+   emscripten_platform_data->main_loop_blockers++;
    if (ms == 0)
       emscripten_set_main_loop_timing(EM_TIMING_SETIMMEDIATE, 0);
    else
@@ -394,14 +486,46 @@ void platform_emscripten_enter_fake_block(int ms)
 
 void platform_emscripten_exit_fake_block(void)
 {
-   command_event(CMD_EVENT_VIDEO_SET_BLOCKING_STATE, NULL);
+   platform_emscripten_pop_main_loop_blocker();
+   platform_emscripten_set_main_loop_interval(emscripten_platform_data->raf_interval);
 }
 
 #endif
 
+void platform_emscripten_deferred_sleep(int ms)
+{
+   if (emscripten_platform_data->deferred_sleep_ms == 0 && ms > 0)
+      emscripten_platform_data->main_loop_blockers++;
+   else if (emscripten_platform_data->deferred_sleep_ms > 0 && ms < 0 && emscripten_platform_data->deferred_sleep_ms <= -ms)
+      platform_emscripten_pop_main_loop_blocker();
+
+   emscripten_platform_data->deferred_sleep_ms += ms;
+
+   if (emscripten_platform_data->deferred_sleep_ms > 0)
+   {
+      emscripten_set_main_loop_timing(EM_TIMING_SETTIMEOUT, emscripten_platform_data->deferred_sleep_ms);
+   } else {
+      emscripten_platform_data->deferred_sleep_ms = 0;
+      platform_emscripten_set_main_loop_interval(emscripten_platform_data->raf_interval);
+   }
+}
+
+bool platform_emscripten_finish_deferred_sleep(void)
+{
+   if (!emscripten_platform_data->deferred_sleep_ms)
+      return false;
+
+   emscripten_platform_data->deferred_sleep_ms = 0;
+   platform_emscripten_pop_main_loop_blocker();
+   platform_emscripten_set_main_loop_interval(emscripten_platform_data->raf_interval);
+   return true;
+}
+
 void platform_emscripten_set_main_loop_interval(int interval)
 {
    emscripten_platform_data->raf_interval = interval;
+   if (emscripten_platform_data->main_loop_blockers > 0)
+      return;
 #ifdef PROXY_TO_PTHREAD
    if (interval != 0)
       platform_emscripten_run_on_browser_thread_sync(set_raf_interval, (void *)interval);
@@ -413,6 +537,68 @@ void platform_emscripten_set_main_loop_interval(int interval)
 #endif
 }
 
+void platform_emscripten_set_pointer_visibility(bool state)
+{
+   MAIN_THREAD_EM_ASM({
+      if ($0) {
+         Module.canvas.style.removeProperty("cursor");
+      } else {
+         Module.canvas.style.setProperty("cursor", "none");
+      }
+   }, state);
+}
+
+static void platform_emscripten_do_set_fullscreen_state(void *data)
+{
+   bool ran_user_cb = EM_ASM_INT({
+      var func = $0 ? "fullscreenEnter" : "fullscreenExit";
+      if (Module[func]) {
+         Module[func]();
+         return 1;
+      }
+      return 0;
+   }, emscripten_platform_data->fullscreen);
+   if (ran_user_cb)
+      return;
+
+   if (emscripten_platform_data->fullscreen)
+      emscripten_request_fullscreen("#canvas", false);
+   else
+      emscripten_exit_fullscreen();
+}
+
+void platform_emscripten_set_fullscreen_state(bool state)
+{
+   if (state == emscripten_platform_data->fullscreen)
+      return;
+
+   emscripten_platform_data->fullscreen = state;
+   platform_emscripten_run_on_browser_thread_sync(platform_emscripten_do_set_fullscreen_state, NULL);
+}
+
+void platform_emscripten_set_wake_lock(bool state)
+{
+   PlatformEmscriptenSetWakeLock(state);
+}
+
+void platform_emscripten_set_canvas_size(int width, int height)
+{
+   if (!emscripten_platform_data->enable_set_canvas_size)
+      return;
+
+   PlatformEmscriptenSetCanvasSize(width, height);
+}
+
+enum platform_emscripten_browser platform_emscripten_get_browser(void)
+{
+   return emscripten_platform_data->browser;
+}
+
+enum platform_emscripten_os platform_emscripten_get_os(void)
+{
+   return emscripten_platform_data->os;
+}
+
 /* frontend driver impl */
 
 static void frontend_emscripten_get_env(int *argc, char *argv[],
@@ -422,6 +608,11 @@ static void frontend_emscripten_get_env(int *argc, char *argv[],
    char user_path[PATH_MAX];
    char bundle_path[PATH_MAX];
    const char *home = getenv("HOME");
+
+   /* Try to set core library path so the frontend knows what core is currently loaded.
+    * It's not an issue if left unspecified, but turning off the "Always Reload Core on
+    * Run Content" option will only work if the frontend knows the current core. */
+   path_set(RARCH_PATH_CORE, getenv("LIBRARY_PATH"));
 
    if (home)
    {
@@ -557,6 +748,51 @@ static uint64_t frontend_emscripten_get_free_mem(void)
    return (PLATFORM_GETVAL(u64, &emscripten_platform_data->memory_limit) - used);
 }
 
+#ifdef HAVE_AUDIOWORKLET
+void audioworklet_close(void);
+#endif
+
+static void frontend_emscripten_exec_browser(void *path)
+{
+   const char *core    = emscripten_platform_data->fork_mode == FRONTEND_FORK_NONE ? 0 : path;
+   const char *content = emscripten_platform_data->fork_mode == FRONTEND_FORK_CORE_WITH_ARGS ? path_get(RARCH_PATH_CONTENT) : 0;
+
+#ifdef HAVE_AUDIOWORKLET
+   audioworklet_close();
+#endif
+
+   EM_ASM({
+#ifdef PROXY_TO_PTHREAD
+      /* undo OffscreenCanvas */
+      let newCanvas = Module.canvas.cloneNode();
+      Module.canvas.replaceWith(newCanvas);
+      Module.canvas = newCanvas;
+#endif
+      if (typeof Module["retroArchExit"] == "function")
+         setTimeout(Module["retroArchExit"], 0, $0 && UTF8ToString($0), $1 && UTF8ToString($1));
+      else
+         out("[INFO] Exiting, but Module.retroArchExit was not provided");
+   }, core, content);
+   emscripten_force_exit(0);
+}
+
+static void frontend_emscripten_exec(const char *path, bool should_load_content)
+{
+   PlatformEmscriptenFree();
+   platform_emscripten_run_on_browser_thread_sync(frontend_emscripten_exec_browser, (void *)path);
+}
+
+static void frontend_emscripten_exitspawn(char *s, size_t len, char *args)
+{
+   frontend_emscripten_exec(s, false);
+}
+
+static bool frontend_emscripten_set_fork(enum frontend_fork fork_mode)
+{
+   emscripten_platform_data->fork_mode = fork_mode;
+   return true;
+}
+
 /* program entry and startup */
 
 #ifdef HAVE_EXTRA_WASMFS
@@ -575,7 +811,7 @@ static void platform_emscripten_mount_filesystems(void)
          path_parent_dir(parent, strlen(parent));
          if (!path_mkdir(parent))
          {
-            printf("mkdir error %d\n", errno);
+            printf("[OPFS] mkdir error %d\n", errno);
             abort();
          }
          free(parent);
@@ -628,7 +864,7 @@ static void platform_emscripten_mount_filesystems(void)
          char *base_url = strdup(line);
          base_url[strcspn(base_url, "\r\n")] = '\0'; // drop newline
          base_url[len-1] = '\0'; // drop newline
-         backend_t fetch;
+         backend_t fetch = NULL;
          len = max_line_len;
          // Don't create fetch backend unless manifest actually has entries
          while (getline(&line, &len, file) != -1)
@@ -636,6 +872,10 @@ static void platform_emscripten_mount_filesystems(void)
             if (!fetch)
             {
                fetch = wasmfs_create_fetch_backend(base_url, 16*1024*1024);
+               if(!fetch) {
+                 printf("[FetchFS] couldn't create fetch backend for %s\n", base_url);
+                 abort();
+               }
                wasmfs_create_directory(fetch_base_dir, 0777, fetch);
             }
             char *realfs_path = strstr(line, " "), *url = line;
@@ -700,13 +940,16 @@ static int thread_main(int argc, char *argv[])
    platform_emscripten_mount_filesystems();
 #endif
 
+   PlatformEmscriptenGLContextEventInit();
    emscripten_set_main_loop(emscripten_mainloop, 0, 0);
+   emscripten_pause_main_loop();
 #ifdef PROXY_TO_PTHREAD
    emscripten_set_main_loop_timing(EM_TIMING_SETIMMEDIATE, 0);
 #else
    emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
 #endif
    rarch_main(argc, argv, NULL);
+   emscripten_resume_main_loop();
 
    return 0;
 }
@@ -720,6 +963,7 @@ static void *main_pthread(void* arg)
 {
    emscripten_set_thread_name(pthread_self(), "Application main thread");
    emscripten_platform_data->program_thread_id = pthread_self();
+   PlatformEmscriptenKeepThreadAlive();
    thread_main(_main_argc, _main_argv);
    return NULL;
 }
@@ -733,6 +977,7 @@ static void raf_signaler(void)
 int main(int argc, char *argv[])
 {
    int ret = 0;
+   unsigned host_browser, host_os;
 #ifdef PROXY_TO_PTHREAD
    pthread_attr_t attr;
    pthread_t thread;
@@ -740,14 +985,52 @@ int main(int argc, char *argv[])
    /* this never gets freed */
    emscripten_platform_data = (emscripten_platform_data_t *)calloc(1, sizeof(emscripten_platform_data_t));
 
+   PlatformEmscriptenGetSystemInfo(&host_browser, &host_os);
+   emscripten_platform_data->browser = host_browser;
+   emscripten_platform_data->os      = host_os;
+
+   emscripten_platform_data->enable_set_canvas_size = !!getenv("ENABLE_SET_CANVAS_SIZE");
+   emscripten_platform_data->disable_detect_enter_fullscreen = !!getenv("DISABLE_DETECT_ENTER_FULLSCREEN");
    emscripten_platform_data->has_async_atomics = EM_ASM_INT({
       return Atomics?.waitAsync?.toString().includes("[native code]");
    });
 
-   PlatformEmscriptenWatchCanvasSizeAndDpr(malloc(sizeof(double)));
+   EM_ASM({
+      /* keyboard events won't work without the canvas being focused */
+      if (!Module.canvas.getAttribute("tabindex"))
+         Module.canvas.setAttribute("tabindex", "-1");
+      Module.canvas.focus();
+
+      /* background should be black */
+      Module.canvas.style.backgroundColor = "#000000";
+
+      /* border and padding may interfere with pointer event coordinates */
+      Module.canvas.style.setProperty("padding", "0px", "important");
+      Module.canvas.style.setProperty("border", "none", "important");
+
+      /* ensure canvas size is constrained by CSS, otherwise infinite resizing may occur */
+      if (window.getComputedStyle(Module.canvas).display == "inline") {
+         err("[WARN] Canvas should not use display: inline!");
+         Module.canvas.style.display = "inline-block";
+      }
+      var oldWidth  = Module.canvas.clientWidth;
+      var oldHeight = Module.canvas.clientHeight;
+      Module.canvas.width  = 64;
+      Module.canvas.height = 64;
+      if (oldWidth != Module.canvas.clientWidth || oldHeight != Module.canvas.clientHeight) {
+         err("[WARN] Canvas size should be set using CSS properties!");
+         Module.canvas.style.width  = oldWidth  + "px";
+         Module.canvas.style.height = oldHeight + "px";
+      }
+   });
+
+   PlatformEmscriptenKeepThreadAlive();
+   PlatformEmscriptenWatchCanvasSizeAndDpr(&emscripten_platform_data->device_pixel_ratio_temp);
+   PlatformEmscriptenCanvasListenersInit();
    PlatformEmscriptenWatchWindowVisibility();
    PlatformEmscriptenPowerStateInit();
    PlatformEmscriptenMemoryUsageInit();
+   PlatformEmscriptenWatchFullscreen();
 
    emscripten_platform_data->raf_interval = 1;
 #ifdef PROXY_TO_PTHREAD
@@ -777,10 +1060,10 @@ frontend_ctx_driver_t frontend_ctx_emscripten = {
    frontend_emscripten_get_env,         /* environment_get */
    NULL,                                /* init */
    NULL,                                /* deinit */
-   NULL,                                /* exitspawn */
+   frontend_emscripten_exitspawn,       /* exitspawn */
    NULL,                                /* process_args */
-   NULL,                                /* exec */
-   NULL,                                /* set_fork */
+   frontend_emscripten_exec,            /* exec */
+   frontend_emscripten_set_fork,        /* set_fork */
    NULL,                                /* shutdown */
    NULL,                                /* get_name */
    NULL,                                /* get_os */

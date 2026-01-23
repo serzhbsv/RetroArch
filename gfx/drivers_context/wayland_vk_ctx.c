@@ -16,6 +16,10 @@
 
 #include <unistd.h>
 
+#ifdef HAVE_WAYLAND_BACKPORT
+#include "../../gfx/common/wayland_client_backport.h"
+#endif
+
 #include <wayland-client.h>
 #include <wayland-cursor.h>
 
@@ -95,7 +99,7 @@ static bool gfx_ctx_wl_set_resize(void *data, unsigned width, unsigned height)
       return true;
    }
 
-   RARCH_ERR("[Wayland/Vulkan]: Failed to update swapchain.\n");
+   RARCH_ERR("[Vulkan] Failed to update swapchain.\n");
    return false;
 }
 
@@ -312,4 +316,6 @@ const gfx_ctx_driver_t gfx_ctx_vk_wayland = {
    gfx_ctx_wl_bind_hw_render,
    gfx_ctx_wl_get_context_data,
    NULL,
+   NULL, /* create_surface */
+   NULL  /* destroy_surface */
 };

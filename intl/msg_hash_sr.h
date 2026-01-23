@@ -6,6 +6,20 @@
 #pragma warning(disable:4566)
 #endif
 
+/*
+##### NOTE FOR TRANSLATORS ####
+
+PLEASE do NOT modify any `msg_hash_*.h` files, besides `msg_hash_us.h`!
+
+Translations are handled using the localization platform Crowdin:
+https://crowdin.com/project/retroarch
+
+Translations from Crowdin are applied automatically and will overwrite
+any changes made to the other localization files.
+As a result, any submissions directly altering `msg_hash_*.h` files
+other than `msg_hash_us.h` will be rejected.
+*/
+
 /* Top-Level Menu */
 
 MSG_HASH(
@@ -490,10 +504,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_LOCK,
    "Zaključaj instalirano jezgro"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CORE_LOCK,
-   "Spreči modifikaciju trenutno instaliranog jezgra. Može koristiti da se izbegnu nepoželjna ažuriranja kada sadržaj zahteva specifičnu verziju jezgra (npr. ROM-kompleti za arkadne mašine)."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_SET_STANDALONE_EXEMPT,
@@ -1109,6 +1119,10 @@ MSG_HASH(
    "Izmeni podešavanja za usnimavanje."
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_USERNAME,
+   "Korisničko Ime"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LOGGING_SETTINGS,
    "Beleženje"
    )
@@ -1233,10 +1247,6 @@ MSG_HASH(
    "Korisnik"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_USER_SETTINGS,
-   "Izmeni podešavanja naloga, korisničkog imena i jezika."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DIRECTORY_SETTINGS,
    "Direktorijum"
    )
@@ -1259,10 +1269,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DRIVER,
    "Ulaz"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_DRIVER,
-   "Drajver za ulaz. Neki video drajveri forsiraju drugi drajver za ulaz."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_JOYPAD_DRIVER,
@@ -1506,20 +1512,12 @@ MSG_HASH(
    "Biraj između prirodne i ultraširoke super rezolucije."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_X_AXIS_CENTERING,
-   "Centriranje po X osi"
-   )
-MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_X_AXIS_CENTERING,
    "Prođi kroz ove opcije ako slika nije pravilno centrirana na displeju."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_PORCH_ADJUST,
-   "Podesi trem"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CRT_SWITCH_PORCH_ADJUST,
-   "Prodji kroz ove opcije da podesiš trem da bi promenio veličinu slike."
+   MENU_ENUM_SUBLABEL_CRT_SWITCH_VERTICAL_ADJUST,
+   "Prođi kroz ove opcije ako slika nije pravilno centrirana na displeju."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_HIRES_MENU,
@@ -1631,14 +1629,6 @@ MSG_HASH(
 
 /* Settings > Video > Fullscreen Mode */
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FULLSCREEN,
-   "Pokreni u režimu celog ekrana"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_FULLSCREEN,
-   "Pokreni u režimu punog ekrana. Može se promeniti nakon pokretanja. Može biti overrajdovano opcijom iz komandne linije."
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOWED_FULLSCREEN,
    "Režim punog prozora"
@@ -1801,6 +1791,7 @@ MSG_HASH(
    "Uključi HDR ako ga podržava displej."
    )
 
+
 /* Settings > Video > Synchronization */
 
 
@@ -1931,7 +1922,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_AI_SERVICE,
    "VI servis"
    )
-
 
 
 /* Settings > Input > Port # Controls */
@@ -2215,16 +2205,10 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISK_TRAY_EJECT,
    "Izvadi disk"
    )
+/* deprecated */
 
 /* Quick Menu > Shaders */
 
-
-/* Quick Menu > Shaders > Save */
-
-
-
-
-/* Quick Menu > Shaders > Remove */
 
 
 /* Quick Menu > Shaders > Shader Parameters */
@@ -2421,4 +2405,6 @@ MSG_HASH(
 
 
 
+#endif
+#ifdef HAVE_SMBCLIENT
 #endif

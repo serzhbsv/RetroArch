@@ -50,7 +50,7 @@ struct progress_tracker_info
    retro_time_t show_until;
 };
 
-#define CHEEVO_LBOARD_FIRST_FIXED_CHAR 0x2D /* -./0123456789: */
+#define CHEEVO_LBOARD_FIRST_FIXED_CHAR 0x2C /* ,-./0123456789: */
 #define CHEEVO_LBOARD_LAST_FIXED_CHAR 0x3A
 
 /* TODO: rename; this file handles all achievement tracker information, not just leaderboards */
@@ -458,7 +458,8 @@ void gfx_widgets_set_leaderboard_display(unsigned id, const char* value)
          if (i == state->tracker_count)
             state->tracker_info[state->tracker_count++].id = id;
 
-         strncpy(state->tracker_info[i].display, value, sizeof(state->tracker_info[i].display));
+         strlcpy(state->tracker_info[i].display, value,
+               sizeof(state->tracker_info[i].display));
 
          {
             unsigned width = CHEEVO_LBOARD_DISPLAY_PADDING * 2;

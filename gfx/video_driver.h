@@ -61,11 +61,13 @@
 #define VIDEO_SHADER_STOCK_HDR     (GFX_MAX_SHADERS - 8)
 #define VIDEO_SHADER_STOCK_NOBLEND (GFX_MAX_SHADERS - 9)
 
-#define VIDEO_HDR_MAX_CONTRAST 10.0f
-
 #if defined(_XBOX360)
 #define DEFAULT_SHADER_TYPE RARCH_SHADER_HLSL
-#elif defined(HAVE_OPENGLES2) || defined(HAVE_GLSL)
+#elif defined(HAVE_OPENGLES2)
+#define DEFAULT_SHADER_TYPE RARCH_SHADER_GLSL
+#elif defined(HAVE_SLANG)
+#define DEFAULT_SHADER_TYPE RARCH_SHADER_SLANG
+#elif defined(HAVE_GLSL)
 #define DEFAULT_SHADER_TYPE RARCH_SHADER_GLSL
 #elif defined(HAVE_CG)
 #define DEFAULT_SHADER_TYPE RARCH_SHADER_CG
@@ -275,11 +277,12 @@ typedef struct shader_backend
 
 typedef struct video_shader_ctx_params
 {
-   void *data;
    const void *info;
    const void *prev_info;
    const void *feedback_info;
    const void *fbo_info;
+   unsigned vp_width;
+   unsigned vp_height;
    unsigned width;
    unsigned height;
    unsigned tex_width;
@@ -395,6 +398,7 @@ typedef struct video_frame_info
    int custom_vp_y;
    int crt_switch_center_adjust;
    int crt_switch_porch_adjust;
+   int crt_switch_vert_adjust;
 
    unsigned hard_sync_frames;
    unsigned runahead_frames;
@@ -494,6 +498,7 @@ typedef struct video_frame_info
    bool hdr_enable;
    bool overlay_behind_menu;
    bool scan_subframes;
+   bool shader_active;
 } video_frame_info_t;
 
 typedef void (*update_window_title_cb)(void*);
@@ -611,6 +616,16 @@ typedef struct gfx_ctx_driver
    /* Optional. Makes driver context (only GL right now)
     * active for this thread. */
    void (*make_current)(bool release);
+
+   /* Optional. Creates and binds a new window surface, destroying the original
+    * window surface if applicable. Returns true on success and false on error.
+    * Currently only for OpenGL. */
+   bool (*create_surface)(void *data);
+
+   /* Optional. Destroys the current window surface. Returns true on success or
+    * or if there is no currently bound window surface and false on error.
+    * Currently only for OpenGL. */
+   bool (*destroy_surface)(void *data);
 } gfx_ctx_driver_t;
 
 typedef struct gfx_ctx_mode
@@ -679,8 +694,9 @@ typedef struct video_poke_interface
    /* hdr settings */
    void (*set_hdr_max_nits)(void *data, float max_nits);
    void (*set_hdr_paper_white_nits)(void *data, float paper_white_nits);
-   void (*set_hdr_contrast)(void *data, float contrast);
    void (*set_hdr_expand_gamut)(void *data, bool expand_gamut);
+   void (*set_hdr_scanlines)(void *data, bool scanlines);
+   void (*set_hdr_subpixel_layout)(void *data, unsigned subpixel_layout);
 } video_poke_interface_t;
 
 /* msg is for showing a message on the screen
@@ -941,7 +957,8 @@ void video_driver_monitor_reset(void);
 
 void video_driver_set_aspect_ratio(void);
 
-void video_driver_update_viewport(struct video_viewport* vp, bool force_full, bool keep_aspect);
+void video_driver_update_viewport(struct video_viewport* vp,
+      bool force_full, bool keep_aspect, bool y_down);
 
 void video_driver_apply_state_changes(void);
 

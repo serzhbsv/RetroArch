@@ -24,6 +24,7 @@
 #include <boolean.h>
 #include <retro_common_api.h>
 #include <retro_miscellaneous.h>
+#include <file/config_file.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -88,6 +89,13 @@ enum override_type
    OVERRIDE_GAME
 };
 
+enum cloud_sync_mode_type
+{
+   CLOUD_SYNC_MODE_AUTOMATIC = 0,
+   CLOUD_SYNC_MODE_MANUAL,
+   CLOUD_SYNC_MODE_LAST
+};
+
 enum settings_glob_flags
 {
    SETTINGS_FLG_MODIFIED              = (1 << 0),
@@ -114,6 +122,8 @@ typedef struct settings
       int replay_slot;
       int crt_switch_center_adjust;
       int crt_switch_porch_adjust;
+      int crt_switch_vertical_adjust;
+      int video_max_frame_latency;
 #ifdef HAVE_VULKAN
       int vulkan_gpu_index;
 #endif
@@ -235,6 +245,7 @@ typedef struct settings
       unsigned network_cmd_port;
       unsigned network_remote_base_port;
       unsigned keymapper_port;
+      unsigned cloud_sync_sync_mode;
       unsigned video_window_opacity;
       unsigned crt_switch_resolution;
       unsigned crt_switch_resolution_super;
@@ -246,7 +257,6 @@ typedef struct settings
       unsigned video_scale_integer_axis;
       unsigned video_scale_integer_scaling;
       unsigned video_max_swapchain_images;
-      unsigned video_max_frame_latency;
       unsigned video_swap_interval;
       unsigned video_hard_sync_frames;
       unsigned video_frame_delay;
@@ -294,6 +304,7 @@ typedef struct settings
       unsigned menu_xmb_layout;
       unsigned menu_xmb_shader_pipeline;
       unsigned menu_xmb_alpha_factor;
+      unsigned menu_xmb_current_menu_icon;
       unsigned menu_xmb_theme;
       unsigned menu_xmb_color_theme;
       unsigned menu_xmb_thumbnail_scale_factor;
@@ -304,6 +315,9 @@ typedef struct settings
       unsigned menu_materialui_thumbnail_view_landscape;
       unsigned menu_materialui_landscape_layout_optimization;
       unsigned menu_ozone_color_theme;
+      unsigned menu_ozone_header_icon;
+      unsigned menu_ozone_header_separator;
+      unsigned menu_ozone_font_scale;
       unsigned menu_font_color_red;
       unsigned menu_font_color_green;
       unsigned menu_font_color_blue;
@@ -318,6 +332,7 @@ typedef struct settings
       unsigned menu_screensaver_timeout;
       unsigned menu_screensaver_animation;
       unsigned menu_remember_selection;
+      unsigned menu_startup_page;
 
       unsigned playlist_entry_remove_enable;
       unsigned playlist_show_inline_core_name;
@@ -340,6 +355,7 @@ typedef struct settings
       unsigned input_overlay_lightgun_four_touch_input;
       unsigned input_overlay_mouse_hold_msec;
       unsigned input_overlay_mouse_dtap_msec;
+      unsigned input_overlay_mouse_alt_two_touch_input;
 #endif
 
       unsigned run_ahead_frames;
@@ -366,6 +382,8 @@ typedef struct settings
       unsigned video_bfi_dark_frames;
       unsigned video_shader_subframes;
       unsigned video_autoswitch_refresh_rate;
+      unsigned video_hdr_subpixel_layout;
+
       unsigned quit_on_close_content;
 
 #ifdef HAVE_LAKKA
@@ -380,6 +398,12 @@ typedef struct settings
 
       unsigned cheevos_appearance_anchor;
       unsigned cheevos_visibility_summary;
+
+#ifdef HAVE_SMBCLIENT
+      unsigned smb_client_auth_mode;
+      unsigned smb_client_num_contexts;
+      unsigned smb_client_timeout;
+#endif
    } uints;
 
    struct
@@ -404,7 +428,6 @@ typedef struct settings
       float video_msg_bgcolor_opacity;
       float video_hdr_max_nits;
       float video_hdr_paper_white_nits;
-      float video_hdr_display_contrast;
 
       float menu_scale_factor;
       float menu_widget_scale_factor;
@@ -416,7 +439,15 @@ typedef struct settings
       float menu_ticker_speed;
       float menu_rgui_particle_effect_speed;
       float menu_screensaver_animation_speed;
+      float ozone_padding_factor;
       float ozone_thumbnail_scale_factor;
+      float ozone_font_scale_factor_global;
+      float ozone_font_scale_factor_title;
+      float ozone_font_scale_factor_sidebar;
+      float ozone_font_scale_factor_label;
+      float ozone_font_scale_factor_sublabel;
+      float ozone_font_scale_factor_time;
+      float ozone_font_scale_factor_footer;
 
       float cheevos_appearance_padding_h;
       float cheevos_appearance_padding_v;
@@ -450,6 +481,8 @@ typedef struct settings
       float input_analog_deadzone;
       float input_axis_threshold;
       float input_analog_sensitivity;
+      float input_sensor_accelerometer_sensitivity;
+      float input_sensor_gyroscope_sensitivity;
 #ifdef _3DS
       float bottom_font_scale;
 #endif
@@ -518,7 +551,15 @@ typedef struct settings
       char ai_service_url[PATH_MAX_LENGTH];
 
       char translation_service_url[2048]; /* TODO/FIXME - check size */
-   } arrays;
+#ifdef HAVE_SMBCLIENT
+      char smb_client_server_address[256];
+      char smb_client_share[256];
+      char smb_client_subdir[PATH_MAX_LENGTH];
+      char smb_client_username[128];
+      char smb_client_password[128];
+      char smb_client_workgroup[64];
+#endif
+} arrays;
 
    struct
    {
@@ -575,6 +616,7 @@ typedef struct settings
       char bundle_assets_src[PATH_MAX_LENGTH];
       char bundle_assets_dst[PATH_MAX_LENGTH];
       char path_menu_xmb_font[PATH_MAX_LENGTH];
+      char path_menu_ozone_font[PATH_MAX_LENGTH];
       char path_cheat_database[PATH_MAX_LENGTH];
       char path_content_database[PATH_MAX_LENGTH];
       char path_overlay[PATH_MAX_LENGTH];
@@ -647,6 +689,8 @@ typedef struct settings
       bool video_notch_write_over_enable;
       bool video_hdr_enable;
       bool video_hdr_expand_gamut;
+      bool video_hdr_scanlines;
+      bool video_use_metal_arg_buffers;
 
       /* Accessibility */
       bool accessibility_enable;
@@ -704,6 +748,8 @@ typedef struct settings
       bool input_descriptor_label_show;
       bool input_descriptor_hide_unbound;
       bool input_all_users_control_menu;
+      bool input_menu_singleclick_playlists;
+      bool input_menu_allow_tabs_back;
       bool input_menu_swap_ok_cancel_buttons;
       bool input_menu_swap_scroll_buttons;
       bool input_backtouch_enable;
@@ -714,6 +760,7 @@ typedef struct settings
       bool input_turbo_enable;
       bool input_turbo_allow_dpad;
       bool input_hotkey_device_merge;
+      bool input_hotkey_follows_player1;
 #if defined(HAVE_DINPUT) || defined(HAVE_WINRAWINPUT)
       bool input_nowinkey_enable;
 #endif
@@ -731,7 +778,6 @@ typedef struct settings
       bool frame_time_counter_reset_after_save_state;
 
       /* Menu */
-      bool filter_by_current_core;
       bool menu_enable_widgets;
       bool menu_show_load_content_animation;
       bool notification_show_autoconfig;
@@ -803,6 +849,7 @@ typedef struct settings
       bool menu_materialui_auto_rotate_nav_bar;
       bool menu_materialui_dual_thumbnail_list_view_enable;
       bool menu_materialui_thumbnail_background_enable;
+      bool menu_thumbnail_background_enable;
       bool menu_rgui_background_filler_thickness_enable;
       bool menu_rgui_border_filler_thickness_enable;
       bool menu_rgui_border_filler_enable;
@@ -820,12 +867,12 @@ typedef struct settings
       bool menu_xmb_vertical_thumbnails;
       bool menu_content_show_settings;
       bool menu_content_show_favorites;
+      bool menu_content_show_favorites_first;
       bool menu_content_show_images;
       bool menu_content_show_music;
       bool menu_content_show_video;
       bool menu_content_show_netplay;
       bool menu_content_show_history;
-      bool menu_content_show_add;
       bool menu_content_show_playlists;
       bool menu_content_show_playlist_tabs;
       bool menu_content_show_explore;
@@ -862,6 +909,9 @@ typedef struct settings
       bool settings_show_directory;
 #ifdef HAVE_MIST
       bool settings_show_steam;
+#endif
+#ifdef HAVE_SMBCLIENT
+      bool settings_show_smb_client;
 #endif
       bool quick_menu_show_resume_content;
       bool quick_menu_show_restart_content;
@@ -1014,7 +1064,6 @@ typedef struct settings
       bool network_remote_enable;
       bool network_remote_enable_user[MAX_USERS];
       bool load_dummy_on_core_shutdown;
-      bool check_firmware_before_loading;
       bool core_option_category_enable;
       bool core_info_cache_enable;
       bool core_info_savestate_bypass;
@@ -1036,8 +1085,11 @@ typedef struct settings
       bool sort_screenshots_by_content_enable;
       bool config_save_on_exit;
       bool remap_save_on_exit;
+
       bool show_hidden_files;
+      bool filter_by_current_core;
       bool use_last_start_directory;
+      bool core_suggest_always;
 
       bool savefiles_in_content_dir;
       bool savestates_in_content_dir;
@@ -1089,6 +1141,10 @@ typedef struct settings
       bool ai_service_pause;
 
       bool gamemode_enable;
+#ifdef HAVE_BSV_MOVIE
+      bool replay_checkpoint_deserialize;
+#endif
+
 #ifdef _3DS
       bool new3ds_speedup_enable;
       bool bottom_font_enable;
@@ -1109,6 +1165,9 @@ typedef struct settings
       bool game_ai_show_debug;
 #endif
 
+#ifdef HAVE_SMBCLIENT
+      bool smb_client_enable;
+#endif
    } bools;
 
    uint8_t flags;
@@ -1309,6 +1368,8 @@ int8_t config_save_overrides(enum override_type type,
  * another one. Will load a dummy core to flush state
  * properly. */
 bool config_replace(bool config_save_on_exit, char *path);
+
+config_file_t *open_default_config_file(void);
 #endif
 
 bool config_overlay_enable_default(void);

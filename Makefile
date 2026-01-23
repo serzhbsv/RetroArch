@@ -1,4 +1,5 @@
 HAVE_FILE_LOGGER=1
+HAVE_STATESTREAM?=1
 NEED_CXX_LINKER?=0
 NEED_GOLD_LINKER?=0
 MISSING_DECLS   =0
@@ -45,7 +46,6 @@ else
    OBJDIR := $(OBJDIR_BASE)/release
    CFLAGS ?= -O3
    CXXFLAGS ?= -O3
-   DEF_FLAGS += -ffast-math
 endif
 
 DEF_FLAGS += -Wall -Wsign-compare
@@ -113,7 +113,7 @@ endif
 
 ifneq ($(CXX_BUILD), 1)
    ifneq ($(C89_BUILD),)
-      CFLAGS += -std=c89 -ansi -pedantic -Werror=pedantic -Wno-long-long -Werror=declaration-after-statement
+      CFLAGS += -std=c89 -ansi -pedantic -Werror=pedantic -Wno-long-long -Werror=declaration-after-statement -Wno-variadic-macros
    else ifeq ($(HAVE_C99), 1)
       CFLAGS += $(C99_CFLAGS)
    endif
@@ -171,7 +171,7 @@ ifneq ($(MOC_HEADERS),)
     RARCH_OBJ += $(MOC_OBJ)
 endif
 
-all: info $(TARGET) config.mk
+all: $(TARGET) config.mk
 
 define INFO
 ASFLAGS: $(ASFLAGS)

@@ -30,16 +30,31 @@
 #include "../../menu/menu_driver.h"
 #endif
 
-#include "../common/vga_defines.h"
-
 #include "../font_driver.h"
 
 #include "../../driver.h"
 #include "../../verbosity.h"
 
-/*
- * FONT DRIVER
- */
+#define VGA_WIDTH 320
+#define VGA_HEIGHT 200
+
+typedef struct vga
+{
+   unsigned char *vga_menu_frame;
+   unsigned char *vga_frame;
+
+   unsigned vga_menu_width;
+   unsigned vga_menu_height;
+   unsigned vga_menu_pitch;
+   unsigned vga_menu_bits;
+   unsigned vga_video_width;
+   unsigned vga_video_height;
+   unsigned vga_video_pitch;
+   unsigned vga_video_bits;
+
+   bool color;
+   bool vga_rgb32;
+} vga_t;
 
 typedef struct
 {
@@ -463,8 +478,9 @@ static const video_poke_interface_t vga_poke_interface = {
    NULL, /* get_hw_render_interface */
    NULL, /* set_hdr_max_nits */
    NULL, /* set_hdr_paper_white_nits */
-   NULL, /* set_hdr_contrast */
-   NULL  /* set_hdr_expand_gamut */
+   NULL, /* set_hdr_expand_gamut */
+   NULL, /* set_hdr_scanlines */
+   NULL  /* set_hdr_subpixel_layout */
 };
 
 static void vga_gfx_get_poke_interface(void *data,

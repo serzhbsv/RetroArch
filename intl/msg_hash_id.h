@@ -6,6 +6,20 @@
 #pragma warning(disable:4566)
 #endif
 
+/*
+##### NOTE FOR TRANSLATORS ####
+
+PLEASE do NOT modify any `msg_hash_*.h` files, besides `msg_hash_us.h`!
+
+Translations are handled using the localization platform Crowdin:
+https://crowdin.com/project/retroarch
+
+Translations from Crowdin are applied automatically and will overwrite
+any changes made to the other localization files.
+As a result, any submissions directly altering `msg_hash_*.h` files
+other than `msg_hash_us.h` will be rejected.
+*/
+
 /* Top-Level Menu */
 
 MSG_HASH(
@@ -68,6 +82,10 @@ MSG_HASH(
    "Pilih 'core' yang akan dipakai."
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_LIST_UNLOAD,
+   "Lepas Core"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LOAD_CONTENT_LIST,
    "Muat konten"
    )
@@ -124,6 +142,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_SUBLABEL_SHOW_WIMP,
    "Buka menu desktop tradisional."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_MENU_DISABLE_KIOSK_MODE,
+   "Nonaktifkan Mode Kiosk"
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_MENU_DISABLE_KIOSK_MODE,
@@ -188,6 +210,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_SUBLABEL_QUIT_RETROARCH,
    "Keluar dari aplikasi RetroArch. Simpan konfigurasi saat keluar dinyalakan."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_SYNC_NOW,
+   "Sinkronkan"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_CLOUD_SYNC_SYNC_NOW,
+   "Manual mengaktifkan sinkronisasi awan."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_QUIT_RETROARCH_NOSAVE,
@@ -476,6 +506,10 @@ MSG_HASH(
    "Syarat Minimal Grafis API"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_CORE_PATH,
+   "Jalur Lengkap"
+)
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_INFO_SAVESTATE_SUPPORT_LEVEL,
    "Dukungan Save State"
    )
@@ -493,7 +527,11 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_INFO_FIRMWARE_IN_CONTENT_DIRECTORY,
-   "- Catatan: 'Berkas Sistem ada di Direktori Konten' sedang aktif."
+   "Catatan: 'Berkas Sistem ada di Direktori Konten' aktif."
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CORE_INFO_FIRMWARE_PATH,
+   "Mencari di: %s"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MISSING_REQUIRED,
@@ -514,10 +552,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_LOCK,
    "Kunci Core Terpasang"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CORE_LOCK,
-   "Mencegah modifikasi 'core' yang saat ini terpasang. Bermanfaat untuk mencegah 'core' tidak asal diperbarui jika isi permainan perlu versi 'core' tertentu agar tetap berjalan (seperti ROM Arcade)."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_DELETE,
@@ -585,6 +619,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CPU_CORES,
    "'Core' CPU"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_JIT_AVAILABLE,
+   "JIT Tersedia"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_SYSTEM_INFO_FRONTEND_IDENTIFIER,
@@ -1285,10 +1323,6 @@ MSG_HASH(
    "Pengguna"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_USER_SETTINGS,
-   "Ubah pengaturan akun, nama pengguna, dan bahasa."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DIRECTORY_SETTINGS,
    "Direktori"
    )
@@ -1343,10 +1377,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DRIVER,
    "Masukan"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_DRIVER,
-   "Driver masukan yang dipakai. Beberapa driver video memaksa aplikasi untuk mengganti driver masukan tertentu."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_JOYPAD_DRIVER,
@@ -1491,66 +1521,6 @@ MSG_HASH(
    "Penyisipan Bingkai Hitam"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_120,
-   "1 - Untuk Layar di Laju Segar 120Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_180,
-   "2 - Untuk Layar di Laju Segar 180Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_240,
-   "3 - Untuk Layar di Laju Segar 240Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_300,
-   "4 - Untuk Layar di Laju Segar 300Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_360,
-   "5 - Untuk Layar di Laju Segar 360Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_420,
-   "6 - Untuk Layar di Laju Segar 420Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_480,
-   "7 - Untuk Layar di Laju Segar 480Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_540,
-   "8 - Untuk Layar di Laju Segar 540Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_600,
-   "9 - Untuk Layar di Laju Segar 600Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_660,
-   "10 - Untuk Layar di Laju Segar 660Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_720,
-   "11 - Untuk Layar di Laju Segar 720Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_780,
-   "12 - Untuk Layar di Laju Segar 780Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_840,
-   "13 - Untuk Layar di Laju Segar 840Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_900,
-   "14 - Untuk Layar di Laju Segar 900Hz"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_BLACK_FRAME_INSERTION_VALUE_960,
-   "15 - Untuk Layar di Laju Segar 960Hz"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_BFI_DARK_FRAMES,
    "Sisipan Bingkai Hitam - Bingkai Gelap"
    )
@@ -1630,20 +1600,12 @@ MSG_HASH(
    "Mengganti ke resolusi lokal atau super ultra lebar."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_X_AXIS_CENTERING,
-   "Pemusatan Sumbu-X"
-   )
-MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_X_AXIS_CENTERING,
    "Atur opsi ini jika gambar tidak dapat ditampilkan memusat semestinya."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_PORCH_ADJUST,
-   "Serambi Sesuaikan"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CRT_SWITCH_PORCH_ADJUST,
-   "Atur opsi ini untuk menyesuaikan pengaturan teras untuk mengubah ukuran gambar."
+   MENU_ENUM_SUBLABEL_CRT_SWITCH_VERTICAL_ADJUST,
+   "Atur opsi ini jika gambar tidak dapat ditampilkan memusat semestinya."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_HIRES_MENU,
@@ -1763,14 +1725,6 @@ MSG_HASH(
 
 /* Settings > Video > Fullscreen Mode */
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FULLSCREEN,
-   "Mulai dalam Mode Layar Penuh"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_FULLSCREEN,
-   "Mulai di layar penuh. Dapat diubah saat waktu jalan. Dapat ditimpa alihan baris perintah."
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOWED_FULLSCREEN,
    "Mode Layar Penuh Berjendela"
@@ -1945,33 +1899,10 @@ MSG_HASH(
    "Tingkat Serian Layar"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_MAX_NITS,
-   "Mengatur tingkat serian layar (dalam cd/m2) dari monitor/TV. Kunjungi situs RTings untuk rujukan."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_HDR_PAPER_WHITE_NITS,
    "Pancaran Cahaya Layar Layaknya Kertas Bacaan"
    )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_PAPER_WHITE_NITS,
-   "Atur pancaran cahaya layar seperti membaca buku atau koran. Berguna jika ingin menyesuaikan layar dengan keadaan ruangan."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_HDR_CONTRAST,
-   "Kontras"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_CONTRAST,
-   "Pengaturan sinar gamma/kontras untuk HDR. Kontras antara gambar terang dan gelap bias diatur. Semakin tinggi Kontras HDR, semakin kentara tampilan terang dan gelap; semakin rendah kontras, semakin lusuh gambarnya. Pengguna bisa mengatur gambar sesuai yang diinginkan dan menyesuaikan dengan tampilan layar."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_HDR_EXPAND_GAMUT,
-   "Perluas Warna"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_EXPAND_GAMUT,
-   "Jika warna diubah menjadi linier, makan akan diperluas lagi agar bisa mencapai HDR10."
-   )
+
 
 /* Settings > Video > Synchronization */
 
@@ -1982,10 +1913,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_SWAP_INTERVAL_AUTO,
    "Otomatis"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_ADAPTIVE_VSYNC,
-   "VSync akan aktif sampai kinerja kurang dari laju segar yang dituju. Dapat mengurangi patah-patah saat kinerja kurang dari waktu nyata, dan lebih hemat tenaga."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY,
@@ -2498,14 +2425,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_USER_BINDS,
    "Kendali Porta %u"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_QUIT_PRESS_TWICE,
-   "Konfirmasi Keluar"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_QUIT_PRESS_TWICE,
-   "Untuk keluar dari RetroArch, kombinasi tombol Keluar harus ditekan dua kali."
-   )
 
 /* Settings > Input > Haptic Feedback/Vibration */
 
@@ -2689,11 +2608,6 @@ MSG_HASH(
    "Main Netplay/Mode Menonton (Mati/Nyala)"
    )
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_INPUT_META_SEND_DEBUG_INFO,
-   "Kirim Info Awakutu"
-   )
-
 /* Settings > Input > Port # Controls */
 
 MSG_HASH(
@@ -2719,6 +2633,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_JOYPAD_START,
    "Tombol Mulai"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_INPUT_TURBO,
+   "Tekan Turbo"
    )
 
 /* Settings > Latency */
@@ -3613,10 +3531,6 @@ MSG_HASH(
    "Mulai Ulang"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_RESTART_CONTENT,
-   "Mengulang konten dari awal mula."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CLOSE_CONTENT,
    "Tutup Konten"
    )
@@ -3708,6 +3622,10 @@ MSG_HASH(
 /* Quick Menu > Disc Control */
 
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_DISK_INDEX,
+   "Indeks Cakram"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISK_TRAY_EJECT,
    "Keluarkan Cakram"
    )
@@ -3719,10 +3637,7 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISK_IMAGE_APPEND,
    "Muat Cakram Baru"
    )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_DISK_INDEX,
-   "Indeks Cakram"
-   )
+/* deprecated */
 
 /* Quick Menu > Shaders */
 
@@ -3730,13 +3645,6 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_SHADER_APPLY_CHANGES,
    "Ubahan pada konfigurasi 'shader' akan diterapkan. Gunakan ini jika ingin mengubah jumlah laluan 'shader', penyaringan, skala FBO, dll."
    )
-
-/* Quick Menu > Shaders > Save */
-
-
-
-
-/* Quick Menu > Shaders > Remove */
 
 
 /* Quick Menu > Shaders > Shader Parameters */
@@ -3849,6 +3757,10 @@ MSG_HASH(
    "MATI"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SCAN_USE_DB_NONE,
+   "Tak ada"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_TIMEDATE_AGO,
    "Lalu"
    )
@@ -3889,6 +3801,10 @@ MSG_HASH(
 
 /* XMB: Settings > User Interface > Appearance */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_XMB_CURRENT_MENU_ICON_NONE,
+   "Tak ada"
+   )
 
 /* XMB: Settings Options */
 
@@ -3898,6 +3814,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_OZONE_SORT_AFTER_TRUNCATE_PLAYLIST_NAME,
    "Urut Daftar Main Setelah Pemenggalan Nama (Perlu Mulai Ulang)"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_ICON_NONE,
+   "Tak ada"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_SEPARATOR_NONE,
+   "Tak ada"
    )
 
 
@@ -4113,10 +4037,6 @@ MSG_HASH(
    "Bantuan"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_HELP_SEND_DEBUG_INFO,
-   "Kirim Info Awakutu"
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_NETPLAY_LAN_SCAN_SETTINGS,
    "Pindai jejaring setempat"
    )
@@ -4177,22 +4097,6 @@ MSG_HASH(
 
 /* Notifications */
 
-MSG_HASH(
-   MSG_FAILED_TO_SAVE_DEBUG_INFO,
-   "Gagal menyimpan info awakutu."
-   )
-MSG_HASH(
-   MSG_FAILED_TO_SEND_DEBUG_INFO,
-   "Gagal mengirim info awakutu ke server."
-   )
-MSG_HASH(
-   MSG_SENDING_DEBUG_INFO,
-   "Mengirim info awakutu..."
-   )
-MSG_HASH(
-   MSG_SENT_DEBUG_INFO,
-   "Info awakutu berhasil dikirim. Nomor ID Anda %u."
-   )
 MSG_HASH(
    MSG_NATIVE,
    "Lokal"
@@ -4453,4 +4357,6 @@ MSG_HASH(
 
 
 
+#endif
+#ifdef HAVE_SMBCLIENT
 #endif

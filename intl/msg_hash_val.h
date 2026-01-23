@@ -6,6 +6,20 @@
 #pragma warning(disable:4566)
 #endif
 
+/*
+##### NOTE FOR TRANSLATORS ####
+
+PLEASE do NOT modify any `msg_hash_*.h` files, besides `msg_hash_us.h`!
+
+Translations are handled using the localization platform Crowdin:
+https://crowdin.com/project/retroarch
+
+Translations from Crowdin are applied automatically and will overwrite
+any changes made to the other localization files.
+As a result, any submissions directly altering `msg_hash_*.h` files
+other than `msg_hash_us.h` will be rejected.
+*/
+
 /* Top-Level Menu */
 
 MSG_HASH(
@@ -518,10 +532,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_LOCK,
    "Bloquejar el nucli instal·lat"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CORE_LOCK,
-   "Preven qualsevol modificació sobre el nucli actual instal·lat. Esta opció pot fer-se servir per evitar actualitzacions no desitjades si un contingut requerix d'una versió específica d'un nucli (p.ex. conjunts de ROMs d'arcade)."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_CORE_SET_STANDALONE_EXEMPT,
@@ -1125,6 +1135,10 @@ MSG_HASH(
    "Canvia els ajustos de guardat."
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_CLOUD_SYNC_SYNC_MODE_MANUAL,
+   "Selecció manual"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_VALUE_LOGGING_SETTINGS,
    "Registres"
    )
@@ -1221,10 +1235,6 @@ MSG_HASH(
    "Usuari"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_USER_SETTINGS,
-   "Canvia els ajustos del compte, nom d'usuari i de llengua."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DIRECTORY_SETTINGS,
    "Directoris"
    )
@@ -1255,10 +1265,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_DRIVER,
    "Entrada"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_INPUT_DRIVER,
-   "Escull el controlador d'entrada que s'usarà. Alguns controladors de vídeo poden forçar-ne l'ús d'altres diferents."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_JOYPAD_DRIVER,
@@ -1506,20 +1512,12 @@ MSG_HASH(
    "Canvia entre resolucions natives o panoràmiques."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_X_AXIS_CENTERING,
-   "Centrament de l'eix X"
-   )
-MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_X_AXIS_CENTERING,
    "Modifica esta opció si la imatge no està ben centrada a la pantalla."
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_CRT_SWITCH_PORCH_ADJUST,
-   "Ajustament de pòrtics"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_CRT_SWITCH_PORCH_ADJUST,
-   "Modifica esta opció si els pòrtics no estan ben ajustats i canviar la mida de la imatge."
+   MENU_ENUM_SUBLABEL_CRT_SWITCH_VERTICAL_ADJUST,
+   "Modifica esta opció si la imatge no està ben centrada a la pantalla."
    )
 MSG_HASH(
    MENU_ENUM_SUBLABEL_CRT_SWITCH_HIRES_MENU,
@@ -1635,14 +1633,6 @@ MSG_HASH(
 
 /* Settings > Video > Fullscreen Mode */
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FULLSCREEN,
-   "Començar en mode pantalla completa"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_FULLSCREEN,
-   "Iniciar en pantalla completa. Pot ser canviat durant el funcionament de RetroArch i també anulat mijtançant la terminal d'ordres."
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_WINDOWED_FULLSCREEN,
    "Mode pantalla completa en finestra"
@@ -1837,29 +1827,10 @@ MSG_HASH(
    "Luminància màxima"
    )
 MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_MAX_NITS,
-   "Establix la luminància màxima (en cd/m²) que pot reproduir el teu monitor. Per esbrinar quina es la luminància màxima del teu monitor, visita el web RTings."
-   )
-MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_HDR_PAPER_WHITE_NITS,
    "Luminància de blanc paper"
    )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_PAPER_WHITE_NITS,
-   "Establix la luminància amb la qual el blanc d'una fulla de paper tindria un text llegible, o luminància màxima del rang SDR (rang dinàmic estàndar). Serveix per ajustar-se a la variació en la il·luminació del teu entorn."
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_CONTRAST,
-   "Controla la gamma/contrast de l'HDR. Agafa els colors i fa un increment del rang d'estos entre les àrees més brillants i les més obscures. A major contrast d'HDR, major diferència, i a un contrast menor, la imatge serà més pàl·lida. Això ajuda l'usuari a ajustar la imatge al seu gust i com esta se visualitza millor a la seua pantalla/monitor."
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_HDR_EXPAND_GAMUT,
-   "Ampliar gamma"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_HDR_EXPAND_GAMUT,
-   "Una vegada l'espai de color ha sigut convertit a espai linial, esta funció decideix si es deuria usar una gamma de colors més àmplia per ajustar-se al format HDR10."
-   )
+
 
 /* Settings > Video > Synchronization */
 
@@ -1882,10 +1853,6 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_ADAPTIVE_VSYNC,
    "Sincronització vertical adaptativa"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_VIDEO_ADAPTIVE_VSYNC,
-   "La sincronització vertical es mantindrà activa fins que el rendiment siga inferior al necessari per mantindre la freqüència de refresc d'imatge del monitor/pantalla. Pot reduir el sacseig de la imatge quan el rendiment cau per baix de la velocitat real, alforrant recursos energètics."
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY_AUTO,
@@ -2214,10 +2181,6 @@ MSG_HASH(
    "Detecta"
    )
 MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_PAUSE_ON_DISCONNECT,
-   "Posa en pausa el contingut quan es desconnecte el comandament"
-   )
-MSG_HASH(
    MENU_ENUM_SUBLABEL_PAUSE_ON_DISCONNECT,
    "Posa en pausa el contingut quan qualssevol controlador es desconnecte."
    )
@@ -2263,7 +2226,6 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_INPUT_META_AI_SERVICE,
    "Servei d'IA"
    )
-
 
 
 /* Settings > Input > Port # Controls */
@@ -2585,16 +2547,6 @@ MSG_HASH(
    MENU_ENUM_SUBLABEL_MENU_SETTINGS,
    "Canvia els ajustos de l'aspecte del menú."
    )
-#ifdef _3DS
-#endif
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_SHOW_ADVANCED_SETTINGS,
-   "Vore ajustos avançats"
-   )
-MSG_HASH(
-   MENU_ENUM_SUBLABEL_SHOW_ADVANCED_SETTINGS,
-   "Mostra els ajustos avançats per a usuaris experts."
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_MENU_SAVESTATE_RESUME,
    "Reprendre contingut després d'usar un guardat ràpid"
@@ -2604,9 +2556,19 @@ MSG_HASH(
    "Reprendre contingut al canviar de disc"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SHOW_ADVANCED_SETTINGS,
+   "Vore ajustos avançats"
+   )
+MSG_HASH(
+   MENU_ENUM_SUBLABEL_SHOW_ADVANCED_SETTINGS,
+   "Mostra els ajustos avançats per a usuaris experts."
+   )
+MSG_HASH(
    MENU_ENUM_SUBLABEL_VIDEO_DISABLE_COMPOSITION,
    "Els gestors de finestres empraran la composició per aplicar efectes visuals, detectar finestres que no responguen, entre d'altres coses."
    )
+#ifdef _3DS
+#endif
 
 /* Settings > User Interface > Menu Item Visibility */
 
@@ -2911,16 +2873,10 @@ MSG_HASH(
    MENU_ENUM_LABEL_VALUE_DISK_TRAY_EJECT,
    "Expulsar disc"
    )
+/* deprecated */
 
 /* Quick Menu > Shaders */
 
-
-/* Quick Menu > Shaders > Save */
-
-
-
-
-/* Quick Menu > Shaders > Remove */
 
 
 /* Quick Menu > Shaders > Shader Parameters */
@@ -2963,6 +2919,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_ENABLED,
    "Engegat"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_SCAN_USE_DB_NONE,
+   "Cap"
    )
 
 /* RGUI: Settings > User Interface > Appearance */
@@ -3041,12 +3001,24 @@ MSG_HASH(
 
 /* XMB: Settings > User Interface > Appearance */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_XMB_CURRENT_MENU_ICON_NONE,
+   "Cap"
+   )
 
 /* XMB: Settings Options */
 
 
 /* Ozone: Settings > User Interface > Appearance */
 
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_ICON_NONE,
+   "Cap"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VALUE_OZONE_HEADER_SEPARATOR_NONE,
+   "Cap"
+   )
 
 
 
@@ -3152,14 +3124,6 @@ MSG_HASH(
 
 /* Unused (Only Exist in Translation Files) */
 
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_ASPECT_RATIO_AUTO,
-   "Relació d'aspecte automàtic"
-   )
-MSG_HASH(
-   MENU_ENUM_LABEL_VALUE_VIDEO_FORCE_ASPECT,
-   "Forçar la relació d'aspecte"
-   )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_NETPLAY_ENABLE,
    "Joc en línia"
@@ -3313,4 +3277,6 @@ MSG_HASH(
 
 
 
+#endif
+#ifdef HAVE_SMBCLIENT
 #endif
